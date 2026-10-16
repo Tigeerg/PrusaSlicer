@@ -21,3 +21,10 @@ deps/build-linux/*
 **/.idea/
 .pkg_cache
 CMakeUserPresets.json
+
+# Test artifacts (generated during test runs)
+tests/fff_print/[0-9a-f][0-9a-f][0-9a-f][0-9a-f]-*
+tests/libslic3r/*.png
+tests/libslic3r/*.svg
+tests/libslic3r/*.obj
+src/libseqarrange/*.svg
