@@ -111,6 +111,7 @@ static const t_config_enum_values s_keys_map_PrintHostType {
     { "repetier",       htRepetier },
     { "mks",            htMKS },
     { "prusaconnectnew", htPrusaConnectNew },
+    { "solaprint",      htSolaPrint },
 
 };
 CONFIG_OPTION_ENUM_DEFINE_STATIC_MAPS(PrintHostType)
@@ -2513,7 +2514,8 @@ void PrintConfigDef::init_fff_params()
         { "flashair",       "FlashAir" },
         { "astrobox",       "AstroBox" },
         { "repetier",       "Repetier" },
-        { "mks",            "MKS" }
+        { "mks",            "MKS" },
+        { "solaprint",      "SolaPrint" }
     });
     def->mode = comAdvanced;
     def->cli = ConfigOptionDef::nocli;

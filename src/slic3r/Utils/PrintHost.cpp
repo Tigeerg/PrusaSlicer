@@ -23,6 +23,7 @@
 #include "libslic3r/PrintConfig.hpp"
 #include "libslic3r/Channel.hpp"
 #include "OctoPrint.hpp"
+#include "SolaPrint.hpp"
 #include "Duet.hpp"
 #include "FlashAir.hpp"
 #include "AstroBox.hpp"
@@ -67,6 +68,7 @@ PrintHost* PrintHost::get_print_host(DynamicPrintConfig *config)
             case htPrusaConnectNew: return new PrusaConnectNew(config);
             case htMKS:       return new MKS(config);
             case htMoonraker: return new Moonraker(config);
+            case htSolaPrint: return new SolaPrint(config);
             default:          return nullptr;
         }
     } else {

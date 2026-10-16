@@ -362,6 +362,8 @@ set(SLIC3R_GUI_SOURCES
     Utils/Moonraker.hpp
     Utils/OctoPrint.cpp
     Utils/OctoPrint.hpp
+    Utils/SolaPrint.cpp
+    Utils/SolaPrint.hpp
     Utils/Duet.cpp
     Utils/Duet.hpp
     Utils/EmbossStyleManager.cpp
