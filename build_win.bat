@@ -249,7 +249,7 @@ IF "%PS_STEPS%" NEQ "app-cmake" msbuild /m ALL_BUILD.vcxproj /p:Configuration=%P
 REM Run app
 :RUN_APP
 REM All build steps complete.
-CALL :DIFF_TIME ELAPSED_TIME %START_TIME% %TIME%
+CALL :DIFF_TIME ELAPSED_TIME "%START_TIME%" "%TIME%"
 IF "%PS_CURRENT_STEP%" NEQ "arguments" (
     @ECHO.
     @ECHO Total Build Time Elapsed %ELAPSED_TIME%
@@ -476,11 +476,24 @@ GOTO :EOF
 @REM %2 - Start time
 @REM %3 - End time
 setlocal EnableDelayedExpansion
-set START_ARG=%2
-set END_ARG=%3
-set END=!END_ARG:%TIME:~8,1%=%%100)*100+1!
-set START=!START_ARG:%TIME:~8,1%=%%100)*100+1!
-set /A DIFF=((((10!END:%TIME:~2,1%=%%100)*60+1!%%100)-((((10!START:%TIME:~2,1%=%%100)*60+1!%%100), DIFF-=(DIFF^>^>31)*24*60*60*100
+set START_ARG=%~2
+set END_ARG=%~3
+REM Normalize the TIME format so that both the locale-dependent fraction
+REM separator ('.' or ',') and a leading space for single-digit hours work.
+set START_ARG=%START_ARG: =0%
+set START_ARG=%START_ARG:,=.%
+set END_ARG=%END_ARG: =0%
+set END_ARG=%END_ARG:,=.%
+set /A _H1=1%START_ARG:~0,2%-100
+set /A _M1=1%START_ARG:~3,2%-100
+set /A _S1=1%START_ARG:~6,2%-100
+set /A _C1=1%START_ARG:~9,2%-100
+set /A _H2=1%END_ARG:~0,2%-100
+set /A _M2=1%END_ARG:~3,2%-100
+set /A _S2=1%END_ARG:~6,2%-100
+set /A _C2=1%END_ARG:~9,2%-100
+set /A DIFF=(_H2*360000+_M2*6000+_S2*100+_C2)-(_H1*360000+_M1*6000+_S1*100+_C1)
+if %DIFF% LSS 0 set /A DIFF+=8640000
 set /A CC=DIFF%%100+100,DIFF/=100,SS=DIFF%%60+100,DIFF/=60,MM=DIFF%%60+100,HH=DIFF/60+100
 @endlocal & set %1=%HH:~1%%TIME:~2,1%%MM:~1%%TIME:~2,1%%SS:~1%%TIME:~8,1%%CC:~1%
 @GOTO :EOF
