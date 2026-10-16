@@ -33,6 +33,11 @@ void fuzzy_polyline(Points &poly, const bool closed, const double fuzzy_skin_thi
     Points out;
     out.reserve(poly.size());
 
+    // Keep the first point of an open polyline, so that the fuzzified segment
+    // connects exactly to the boundary point shared with the neighboring segment.
+    if (!closed)
+        out.emplace_back(poly.front());
+
     // Skip the first point for open polyline.
     Point *p0 = closed ? &poly.back() : &poly.front();
     for (auto it_pt1 = closed ? poly.begin() : std::next(poly.begin()); it_pt1 != poly.end(); ++it_pt1) {
@@ -50,6 +55,11 @@ void fuzzy_polyline(Points &poly, const bool closed, const double fuzzy_skin_thi
         dist_left_over = p0pa_dist - p0p1_size;
         p0             = &p1;
     }
+
+    // Keep the last point of an open polyline, so that the fuzzified segment
+    // connects exactly to the boundary point shared with the neighboring segment.
+    if (!closed && out.back() != poly.back())
+        out.emplace_back(poly.back());
 
     while (out.size() < 3) {
         size_t point_idx = poly.size() - 2;
@@ -99,6 +109,11 @@ void fuzzy_extrusion_line(Arachne::ExtrusionLine &ext_lines, const double fuzzy_
         dist_left_over = p0pa_dist - p0p1_size;
         p0             = &p1;
     }
+
+    // Keep the last point of an open line, so that the fuzzified segment
+    // connects exactly to the boundary point shared with the neighboring segment.
+    if (!ext_lines.is_closed && out.back().p != ext_lines.back().p)
+        out.emplace_back(ext_lines.back().p, ext_lines.back().w, ext_lines.back().perimeter_index);
 
     while (out.size() < 3) {
         size_t point_idx = ext_lines.size() - 2;
