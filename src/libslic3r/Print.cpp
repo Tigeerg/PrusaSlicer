@@ -574,7 +574,7 @@ std::string Print::validate(std::vector<std::string>* warnings) const
 
         if (m_config.gcode_flavor != gcfRepRapSprinter && m_config.gcode_flavor != gcfRepRapFirmware &&
             m_config.gcode_flavor != gcfRepetier && m_config.gcode_flavor != gcfMarlinLegacy &&
-            m_config.gcode_flavor != gcfMarlinFirmware && m_config.gcode_flavor != gcfKlipper)
+            m_config.gcode_flavor != gcfMarlinFirmware && m_config.gcode_flavor != gcfCherry3D && m_config.gcode_flavor != gcfKlipper)
             return _u8L("The Wipe Tower is currently only supported for the Marlin, Klipper, RepRap/Sprinter, RepRapFirmware and Repetier G-code flavors.");
         if (! m_config.use_relative_e_distances)
             return _u8L("The Wipe Tower is currently only supported with the relative extruder addressing (use_relative_e_distances=1).");
@@ -757,7 +757,7 @@ std::string Print::validate(std::vector<std::string>* warnings) const
         bool layer_gcode_resets_extruder        = boost::regex_search(m_config.layer_gcode.value, regex_g92e0);
         if (m_config.use_relative_e_distances) {
             // See GH issues #6336 #5073
-            if ((m_config.gcode_flavor == gcfMarlinLegacy || m_config.gcode_flavor == gcfMarlinFirmware) &&
+            if ((m_config.gcode_flavor == gcfMarlinLegacy || m_config.gcode_flavor == gcfMarlinFirmware || m_config.gcode_flavor == gcfCherry3D) &&
                 ! before_layer_gcode_resets_extruder && ! layer_gcode_resets_extruder)
                 return _u8L("Relative extruder addressing requires resetting the extruder position at each layer to prevent loss of floating point accuracy. Add \"G92 E0\" to layer_gcode.");
         } else if (before_layer_gcode_resets_extruder)

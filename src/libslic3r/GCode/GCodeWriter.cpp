@@ -35,7 +35,7 @@ namespace Slic3r {
 // static
 bool GCodeWriter::supports_separate_travel_acceleration(GCodeFlavor flavor)
 {
-    return (flavor == gcfRepetier || flavor == gcfMarlinFirmware ||  flavor == gcfRepRapFirmware);
+    return (flavor == gcfRepetier || flavor == gcfMarlinFirmware || flavor == gcfCherry3D || flavor == gcfRepRapFirmware);
 }
 
 void GCodeWriter::apply_print_config(const PrintConfig &print_config)
@@ -45,6 +45,7 @@ void GCodeWriter::apply_print_config(const PrintConfig &print_config)
     m_single_extruder_multi_material = print_config.single_extruder_multi_material.value;
     bool use_mach_limits = print_config.gcode_flavor.value == gcfMarlinLegacy
                         || print_config.gcode_flavor.value == gcfMarlinFirmware
+                        || print_config.gcode_flavor.value == gcfCherry3D
                         || print_config.gcode_flavor.value == gcfRepRapFirmware;
     m_max_acceleration = static_cast<unsigned int>(std::round((use_mach_limits && print_config.machine_limits_usage.value == MachineLimitsUsage::EmitToGCode) ?
         print_config.machine_max_acceleration_extruding.values.front() : 0));
@@ -79,6 +80,7 @@ std::string GCodeWriter::preamble()
         FLAVOR_IS(gcfRepRapFirmware) ||
         FLAVOR_IS(gcfMarlinLegacy) ||
         FLAVOR_IS(gcfMarlinFirmware) ||
+        FLAVOR_IS(gcfCherry3D) ||
         FLAVOR_IS(gcfKlipper) ||
         FLAVOR_IS(gcfTeacup) ||
         FLAVOR_IS(gcfRepetier) ||
@@ -222,7 +224,7 @@ std::string GCodeWriter::set_acceleration_internal(Acceleration type, unsigned i
     std::ostringstream gcode;
     if (FLAVOR_IS(gcfRepetier))
         gcode << (separate_travel ? "M202 X" : "M201 X") << acceleration << " Y" << acceleration;
-    else if (FLAVOR_IS(gcfRepRapFirmware) || FLAVOR_IS(gcfMarlinFirmware))
+    else if (FLAVOR_IS(gcfRepRapFirmware) || FLAVOR_IS(gcfMarlinFirmware) || FLAVOR_IS(gcfCherry3D))
         gcode << (separate_travel ? "M204 T" : "M204 P") << acceleration;
     else
         gcode << "M204 S" << acceleration;
@@ -236,7 +238,7 @@ std::string GCodeWriter::set_acceleration_internal(Acceleration type, unsigned i
 std::string GCodeWriter::set_junction_deviation(const double junction_deviation)
 {
     std::ostringstream gcode;
-    if (FLAVOR_IS(gcfMarlinFirmware) && junction_deviation > 0. && m_max_junction_deviation > 0.) {
+    if ((FLAVOR_IS(gcfMarlinFirmware) || FLAVOR_IS(gcfCherry3D)) && junction_deviation > 0. && m_max_junction_deviation > 0.) {
         // Clamp the junction deviation to the allowed maximum.
         gcode << "M205 J";
         if (junction_deviation <= m_max_junction_deviation) {

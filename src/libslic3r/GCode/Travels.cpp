@@ -323,7 +323,7 @@ SmoothingParams get_smoothing_params(
     const double travel_length,
     const FullPrintConfig &config
 ) {
-    if (config.gcode_flavor != gcfMarlinFirmware)
+    if (config.gcode_flavor != gcfMarlinFirmware && config.gcode_flavor != gcfCherry3D)
         // Smoothing is supported only on Marlin.
         return {0, 1};
 

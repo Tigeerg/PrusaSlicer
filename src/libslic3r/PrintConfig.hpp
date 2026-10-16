@@ -77,7 +77,7 @@ enum class ArcFittingType {
 
 enum GCodeFlavor : unsigned char {
     gcfRepRapSprinter, gcfRepRapFirmware, gcfRepetier, gcfTeacup, gcfMakerWare, gcfMarlinLegacy, gcfMarlinFirmware, gcfKlipper, gcfSailfish, gcfMach3, gcfMachinekit,
-    gcfSmoothie, gcfNoExtrusion,
+    gcfSmoothie, gcfNoExtrusion, gcfCherry3D,
 };
 
 enum class MachineLimitsUsage {

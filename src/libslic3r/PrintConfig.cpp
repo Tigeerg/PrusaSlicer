@@ -84,6 +84,7 @@ static const t_config_enum_values s_keys_map_GCodeFlavor {
     { "marlin",         gcfMarlinLegacy },
     { "marlin2",        gcfMarlinFirmware },
     { "klipper",        gcfKlipper },
+    { "cherry3d",       gcfCherry3D },
     { "sailfish",       gcfSailfish },
     { "smoothie",       gcfSmoothie },
     { "mach3",          gcfMach3 },
@@ -1841,6 +1842,7 @@ void PrintConfigDef::init_fff_params()
         { "makerware",      "MakerWare (MakerBot)" },
         { "marlin",         "Marlin (legacy)" },
         { "marlin2",        "Marlin 2" },
+        { "cherry3d",       "Cherry3D" },
         { "klipper",        "Klipper" },
         { "sailfish",       "Sailfish (MakerBot)" },
         { "mach3",          "Mach3/LinuxCNC" },
@@ -5799,6 +5801,7 @@ std::string validate(const FullPrintConfig &cfg)
         cfg.gcode_flavor.value != gcfRepRapFirmware &&
         cfg.gcode_flavor.value != gcfMarlinLegacy &&
         cfg.gcode_flavor.value != gcfMarlinFirmware &&
+        cfg.gcode_flavor.value != gcfCherry3D &&
         cfg.gcode_flavor.value != gcfMachinekit &&
         cfg.gcode_flavor.value != gcfRepetier &&
         cfg.gcode_flavor.value != gcfKlipper)

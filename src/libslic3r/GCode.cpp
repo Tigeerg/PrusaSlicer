@@ -705,7 +705,7 @@ void GCodeGenerator::do_export(Print* print, const char* path, GCodeProcessorRes
 namespace DoExport {
     static void init_gcode_processor(const PrintConfig& config, GCodeProcessor& processor, bool& silent_time_estimator_enabled)
     {
-        silent_time_estimator_enabled = (config.gcode_flavor == gcfMarlinLegacy || config.gcode_flavor == gcfMarlinFirmware)
+        silent_time_estimator_enabled = (config.gcode_flavor == gcfMarlinLegacy || config.gcode_flavor == gcfMarlinFirmware || config.gcode_flavor == gcfCherry3D)
                                         && config.silent_mode;
         processor.reset();
         processor.initialize_result_moves();
@@ -1382,7 +1382,7 @@ void GCodeGenerator::_do_export(Print& print, GCodeOutputStream &file, Thumbnail
                 bbox_prime.offset(0.5f);
                 bool overlap = bbox_prime.overlap(bbox_print);
 
-                if (print.config().gcode_flavor == gcfMarlinLegacy || print.config().gcode_flavor == gcfMarlinFirmware) {
+                if (print.config().gcode_flavor == gcfMarlinLegacy || print.config().gcode_flavor == gcfMarlinFirmware || print.config().gcode_flavor == gcfCherry3D) {
                     file.write(this->retract_and_wipe());
                     file.write("M300 S800 P500\n"); // Beep for 500ms, tone 800Hz.
                     if (overlap) {
@@ -1876,7 +1876,7 @@ static bool custom_gcode_sets_temperature(const std::string &gcode, const int mc
 void GCodeGenerator::print_machine_envelope(GCodeOutputStream &file, const Print &print)
 {
     const GCodeFlavor flavor = print.config().gcode_flavor.value;
-    if ( (flavor == gcfMarlinLegacy || flavor == gcfMarlinFirmware || flavor == gcfRepRapFirmware)
+    if ( (flavor == gcfMarlinLegacy || flavor == gcfMarlinFirmware || flavor == gcfCherry3D || flavor == gcfRepRapFirmware)
      && print.config().machine_limits_usage.value == MachineLimitsUsage::EmitToGCode) {
         int factor = flavor == gcfRepRapFirmware ? 60 : 1; // RRF M203 and M566 are in mm/min
         file.write_format("M201 X%d Y%d Z%d E%d ; sets maximum accelerations, mm/sec^2\n",
@@ -1902,7 +1902,7 @@ void GCodeGenerator::print_machine_envelope(GCodeOutputStream &file, const Print
             file.write_format("M204 S%d T%d ; sets acceleration (S) and retract acceleration (R), mm/sec^2\n",
                 int(print.config().machine_max_acceleration_extruding.values.front() + 0.5),
                 int(print.config().machine_max_acceleration_retracting.values.front() + 0.5));
-        else if (flavor == gcfMarlinFirmware)
+        else if (flavor == gcfMarlinFirmware || flavor == gcfCherry3D)
             // New Marlin uses M204 P[print] R[retract] T[travel]
             file.write_format("M204 P%d R%d T%d ; sets acceleration (P, T) and retract acceleration (R), mm/sec^2\n",
                 int(print.config().machine_max_acceleration_extruding.values.front() + 0.5),
@@ -1920,7 +1920,7 @@ void GCodeGenerator::print_machine_envelope(GCodeOutputStream &file, const Print
             print.config().machine_max_jerk_z.values.front() * factor,
             print.config().machine_max_jerk_e.values.front() * factor);
 
-        if (flavor == gcfMarlinFirmware) {
+        if (flavor == gcfMarlinFirmware || flavor == gcfCherry3D) {
             // New Marlin uses M205 J[mm] for junction deviation (only apply if it is > 0)
             file.write_format(writer().set_junction_deviation(config().machine_max_junction_deviation.values.front()).c_str());
         }
