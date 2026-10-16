@@ -3553,6 +3553,18 @@ void PrintConfigDef::init_fff_params()
     def->mode = comExpert;
     def->set_default_value(new ConfigOptionBool(false));
 
+    def = this->add("support_material_use_object_layer_height", coBool);
+    def->label = L("Support layer height equal to object layer height");
+    def->category = L("Support material");
+    // TRN PrintSettings : "Support layer height equal to object layer height"
+    def->tooltip = L("Make the height of the support layers equal to the height of the current object "
+                   "print layers. By default, the support layer height is limited by the maximum layer "
+                   "height defined in the printer settings, which may differ from the layer height "
+                   "actually used for the object. Enable this option to print the support layers with "
+                   "the same layer height as the object layers.");
+    def->mode = comSimple;
+    def->set_default_value(new ConfigOptionBool(false));
+
     def = this->add("support_material_threshold", coInt);
     def->label = L("Overhang threshold");
     def->category = L("Support material");

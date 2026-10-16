@@ -2239,6 +2239,17 @@ SupportGeneratorLayersPtr PrintObjectSupportMaterial::raft_and_intermediate_supp
         assert(dist >= m_support_params.support_layer_height_min - EPSILON);
         if (synchronize) {
             // Emit support layers synchronized with the object layers.
+            // If the top extreme is a top contact layer of a non-soluble interface, its height
+            // hasn't been assigned yet (see new_contact_layer()). Set it to the height of the
+            // object layer it supports, so that the support layers are synchronized with the object layers.
+            if (extr2->layer_type == SupporLayerType::TopContact && extr2->height == 0.) {
+                const size_t idx_layer_above = extr2->idx_object_layer_above;
+                if (idx_layer_above < object.layers().size())
+                    extr2->height = object.layers()[idx_layer_above]->height;
+                else
+                    extr2->height = std::max(m_support_params.support_layer_height_min, extr2z - extr1z);
+                extr2->bottom_z = extr2->print_z - extr2->height;
+            }
             // Find the first object layer, which has its print_z in this support Z range.
             while (idx_layer_object < object.layers().size() && object.layers()[idx_layer_object]->print_z < extr1z + EPSILON)
                 ++ idx_layer_object;
@@ -2256,6 +2267,17 @@ SupportGeneratorLayersPtr PrintObjectSupportMaterial::raft_and_intermediate_supp
                 layer_new.print_z  = object.layers()[idx_layer_object]->print_z;
                 layer_new.height   = object.layers()[idx_layer_object]->height;
                 layer_new.bottom_z = (idx_layer_object > 0) ? object.layers()[idx_layer_object - 1]->print_z : (layer_new.print_z - layer_new.height);
+                assert(intermediate_layers.empty() || intermediate_layers.back()->print_z < layer_new.print_z + EPSILON);
+                intermediate_layers.push_back(&layer_new);
+            }
+            // If the top extreme (e.g., a non-soluble top contact separated from the object by a
+            // contact gap) is not aligned with any object layer, fill the remaining space up to it
+            // with one more intermediate layer, so that the support column stays continuous.
+            if (intermediate_layers.empty() || intermediate_layers.back()->print_z < extr2z - EPSILON) {
+                SupportGeneratorLayer &layer_new = layer_storage.allocate_unguarded(SupporLayerType::Intermediate);
+                layer_new.bottom_z = intermediate_layers.empty() ? extr1z : intermediate_layers.back()->print_z;
+                layer_new.print_z  = extr2z;
+                layer_new.height   = layer_new.print_z - layer_new.bottom_z;
                 assert(intermediate_layers.empty() || intermediate_layers.back()->print_z < layer_new.print_z + EPSILON);
                 intermediate_layers.push_back(&layer_new);
             }

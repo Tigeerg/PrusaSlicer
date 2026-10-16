@@ -1581,6 +1581,7 @@ void TabPrint::build()
         optgroup->append_single_option_line("support_material_xy_spacing", category_path + "xy-separation-between-an-object-and-its-support");
         optgroup->append_single_option_line("dont_support_bridges", category_path + "dont-support-bridges");
         optgroup->append_single_option_line("support_material_synchronize_layers", category_path + "synchronize-with-object-layers");
+        optgroup->append_single_option_line("support_material_use_object_layer_height", category_path + "synchronize-with-object-layers");
 
         optgroup = page->new_optgroup(L("Organic supports"));
         const std::string path = "organic-supports_480131#organic-supports-settings";

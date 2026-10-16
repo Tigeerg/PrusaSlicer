@@ -5442,6 +5442,25 @@ msgstr ""
 "параметр «Зазор поддержки сверху» равен нулю."
 
 #: src/libslic3r/PrintConfig.cpp:3555
+msgid "Support layer height equal to object layer height"
+msgstr "Высота слоя поддержки равна высоте слоя модели"
+
+#. TRN PrintSettings : "Support layer height equal to object layer height"
+#: src/libslic3r/PrintConfig.cpp:3558
+msgid ""
+"Make the height of the support layers equal to the height of the current object "
+"print layers. By default, the support layer height is limited by the maximum layer "
+"height defined in the printer settings, which may differ from the layer height "
+"actually used for the object. Enable this option to print the support layers with "
+"the same layer height as the object layers."
+msgstr ""
+"Задаёт высоту слоёв поддержки равной высоте слоёв модели. По умолчанию высота "
+"слоя поддержки ограничена максимальной высотой слоя, заданной в настройках "
+"принтера, которая может отличаться от фактически используемой высоты слоя "
+"модели. Включите эту опцию, чтобы печатать слои поддержки той же высоты, что "
+"и слои модели."
+
+#: src/libslic3r/PrintConfig.cpp:3555
 msgid "Overhang threshold"
 msgstr "Пороговый угол поддержки"
 
