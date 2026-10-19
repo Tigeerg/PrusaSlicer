@@ -4525,6 +4525,19 @@ msgid ""
 "the support more reliable, but also more difficult to remove."
 msgstr ""
 
+#: src/libslic3r/PrintConfig.cpp:3592
+msgid "Support base expansion"
+msgstr ""
+
+#: src/libslic3r/PrintConfig.cpp:3593
+msgid ""
+"Expand the support base in the XY plane, so it extends slightly beyond the "
+"object contour instead of ending strictly at the object silhouette. This "
+"improves the support stability and makes the support easier to remove. The "
+"support is still trimmed by the object, so it does not collide with the "
+"model. Set to zero to keep the default behaviour."
+msgstr ""
+
 #: src/libslic3r/PrintConfig.cpp:3577
 msgid "Maximum Branch Angle"
 msgstr ""

@@ -67,6 +67,9 @@ struct SupportParameters {
 
 	coordf_t				gap_xy;
 
+	// Horizontal expansion of the base support beyond the object contour (unscaled mm).
+	coordf_t				support_material_base_expansion;
+
     float    				base_angle;
     float    				interface_angle;
 

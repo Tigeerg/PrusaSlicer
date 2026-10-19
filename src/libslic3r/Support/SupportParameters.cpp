@@ -74,6 +74,7 @@ SupportParameters::SupportParameters(const PrintObject &object)
         bridge_flow_ratio += region.config().bridge_flow_ratio;
     }
     this->gap_xy = object_config.support_material_xy_spacing.get_abs_value(external_perimeter_width);
+    this->support_material_base_expansion = std::max(0., object_config.support_material_base_expansion.value);
     bridge_flow_ratio /= object.num_printing_regions();
 
     this->support_material_bottom_interface_flow = slicing_params.soluble_interface || ! object_config.thick_bridges ?

@@ -3589,6 +3589,19 @@ void PrintConfigDef::init_fff_params()
     def->mode = comExpert;
     def->set_default_value(new ConfigOptionBool(true));
 
+    def = this->add("support_material_base_expansion", coFloat);
+    def->label = L("Support base expansion");
+    def->category = L("Support material");
+    // TRN PrintSettings : "Support base expansion"
+    def->tooltip = L("Expand the support base in the XY plane, so it extends slightly beyond the object contour "
+                   "instead of ending strictly at the object silhouette. This improves the support stability and "
+                   "makes the support easier to remove. The support is still trimmed by the object, so it does not "
+                   "collide with the model. Set to zero to keep the default behaviour.");
+    def->sidetext = L("mm");
+    def->min = 0;
+    def->mode = comExpert;
+    def->set_default_value(new ConfigOptionFloat(0.));
+
     def = this->add("support_tree_angle", coFloat);
     def->label = L("Maximum Branch Angle");
     def->category = L("Support material");
