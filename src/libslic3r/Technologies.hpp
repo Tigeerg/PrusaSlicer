@@ -43,9 +43,9 @@
 
 
 // Enable rendering of objects using environment map
-#define ENABLE_ENVIRONMENT_MAP 0
+#define ENABLE_ENVIRONMENT_MAP 1
 // Enable smoothing of objects normals
-#define ENABLE_SMOOTH_NORMALS 0
+#define ENABLE_SMOOTH_NORMALS 1
 
 // Enable imgui dialog which allows to set the parameters used to export binarized gcode
 #define ENABLE_BINARIZED_GCODE_DEBUG_WINDOW 0

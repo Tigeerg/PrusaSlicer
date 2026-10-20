@@ -23,11 +23,14 @@ in vec3 v_normal;
 
 // x = tainted, y = specular;
 out vec2 intensity;
+// Camera space normal, used to sample the environment map (thumbnails only).
+out vec3 env_normal;
 
 void main()
 {
     // First transform the normal into camera space and normalize the result.
     vec3 normal = normalize(view_normal_matrix * v_normal);
+    env_normal = normal;
     
     // Compute the cos of the angle between the normal and lights direction. The light is directional so the direction is constant for every vertex.
     // Since these two are normalized the cosine is the dot product. We also need to clamp the result to the [0,1] range.
