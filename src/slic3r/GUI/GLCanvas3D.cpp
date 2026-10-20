@@ -5046,6 +5046,8 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
         shader->set_uniform("use_environment_tex", false);
         shader->stop_using();
     }
+    // ... and unbind the environment texture, otherwise it stays bound on the active texture unit.
+    glsafe(::glBindTexture(GL_TEXTURE_2D, 0));
 #endif // ENABLE_ENVIRONMENT_MAP
 
     glsafe(::glDisable(GL_DEPTH_TEST));

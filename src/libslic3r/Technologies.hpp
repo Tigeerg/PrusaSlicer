@@ -42,10 +42,14 @@
 #define ENABLE_SLA_VIEW_DEBUG_WINDOW 0
 
 
-// Enable rendering of objects using environment map
+// Enable rendering of objects using environment map.
+// Used by the generated model thumbnails to get a "studio" look; the editor keeps the
+// environment map off unless it is enabled explicitly in Preferences -> Render.
 #define ENABLE_ENVIRONMENT_MAP 1
-// Enable smoothing of objects normals
-#define ENABLE_SMOOTH_NORMALS 1
+// Enable smoothing of objects normals.
+// Keep disabled: this one is applied to every model volume in the editor (3DScene.cpp),
+// not only to the thumbnails, and it visibly changes the shading/edges of the model.
+#define ENABLE_SMOOTH_NORMALS 0
 
 // Enable imgui dialog which allows to set the parameters used to export binarized gcode
 #define ENABLE_BINARIZED_GCODE_DEBUG_WINDOW 0
