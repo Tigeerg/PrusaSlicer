@@ -4960,6 +4960,9 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
     if (thumbnail_params.transparent_background)
 //        glsafe(::glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
         glsafe(::glClearColor(0.4f, 0.4f, 0.4f, 0.0f));
+    else
+        // Neutral "studio" background for a cleaner look of the generated thumbnail image.
+        glsafe(::glClearColor(0.85f, 0.85f, 0.85f, 1.0f));
 
     glsafe(::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     glsafe(::glEnable(GL_DEPTH_TEST));
@@ -4989,6 +4992,15 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
         else {
             shader->set_uniform("emission_factor", 0.0f);
             vol->model.set_color((vol->printable && !vol->is_outside) ? vol->color : ColorRGBA::GRAY());
+#if ENABLE_ENVIRONMENT_MAP
+            // Use the environment map to give the generated thumbnail a "studio" look.
+            // Not applied to the multi-material painting shader, which has no environment map.
+            const unsigned int environment_texture_id = wxGetApp().plater()->get_environment_texture_id();
+            const bool         use_environment_texture = environment_texture_id > 0;
+            shader->set_uniform("use_environment_tex", use_environment_texture);
+            if (use_environment_texture)
+                glsafe(::glBindTexture(GL_TEXTURE_2D, environment_texture_id));
+#endif // ENABLE_ENVIRONMENT_MAP
         }
 
         // the volume may have been deactivated by an active gizmo
@@ -5026,6 +5038,15 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
 
         vol->is_active = is_active;
     }
+
+#if ENABLE_ENVIRONMENT_MAP
+    // Do not leak the environment map usage into the other users of the "gouraud_light" shader.
+    if (GLShaderProgram* shader = wxGetApp().get_shader("gouraud_light")) {
+        shader->start_using();
+        shader->set_uniform("use_environment_tex", false);
+        shader->stop_using();
+    }
+#endif // ENABLE_ENVIRONMENT_MAP
 
     glsafe(::glDisable(GL_DEPTH_TEST));
 

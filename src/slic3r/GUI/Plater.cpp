@@ -3726,13 +3726,46 @@ ThumbnailsList Plater::priv::generate_thumbnails(const ThumbnailsParams& params,
 {
     s_multiple_beds.set_thumbnail_bed_idx(s_multiple_beds.get_active_bed());
     ScopeGuard guard([]() { s_multiple_beds.set_thumbnail_bed_idx(-1); });
+
+    // Supersampling: render at a multiple of the requested size and downscale with a box filter.
+    // Thumbnails are rendered only occasionally, so the extra cost is negligible, while the result
+    // has much cleaner edges and looks smoother.
+    static constexpr unsigned int SUPERSAMPLING = 2;
+
     ThumbnailsList thumbnails;
     for (const Vec2d& size : params.sizes) {
-        thumbnails.push_back(ThumbnailData());
         Point isize(size); // round to ints
-        generate_thumbnail(thumbnails.back(), isize.x(), isize.y(), params, camera_type);
-        if (!thumbnails.back().is_valid())
-            thumbnails.pop_back();
+        const unsigned int w = static_cast<unsigned int>(isize.x());
+        const unsigned int h = static_cast<unsigned int>(isize.y());
+        if (w == 0 || h == 0)
+            continue;
+
+        ThumbnailData hi_res;
+        generate_thumbnail(hi_res, w * SUPERSAMPLING, h * SUPERSAMPLING, params, camera_type);
+        if (!hi_res.is_valid())
+            continue;
+
+        ThumbnailData data;
+        data.set(w, h);
+        if (!data.is_valid())
+            continue;
+
+        for (unsigned int y = 0; y < h; ++y) {
+            for (unsigned int x = 0; x < w; ++x) {
+                unsigned int accum[4] = { 0, 0, 0, 0 };
+                for (unsigned int dy = 0; dy < SUPERSAMPLING; ++dy) {
+                    for (unsigned int dx = 0; dx < SUPERSAMPLING; ++dx) {
+                        const unsigned int src = 4 * ((y * SUPERSAMPLING + dy) * hi_res.width + (x * SUPERSAMPLING + dx));
+                        for (unsigned int c = 0; c < 4; ++c)
+                            accum[c] += hi_res.pixels[src + c];
+                    }
+                }
+                const unsigned int dst = 4 * (y * w + x);
+                for (unsigned int c = 0; c < 4; ++c)
+                    data.pixels[dst + c] = static_cast<unsigned char>(accum[c] / (SUPERSAMPLING * SUPERSAMPLING));
+            }
+        }
+        thumbnails.push_back(std::move(data));
     }
     return thumbnails;
 }
