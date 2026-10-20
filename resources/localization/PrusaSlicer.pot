@@ -4538,6 +4538,39 @@ msgid ""
 "model. Set to zero to keep the default behaviour."
 msgstr ""
 
+#: src/libslic3r/PrintConfig.cpp:3600
+msgid "Roof bridge (layer above support)"
+msgstr ""
+
+#: src/libslic3r/PrintConfig.cpp:3601
+msgid ""
+"Print the bottom of the object layer resting on the support material as a "
+"bridge: slower and with a higher extrusion flow. This improves the surface "
+"quality above the support and makes the support easier to remove."
+msgstr ""
+
+#: src/libslic3r/PrintConfig.cpp:3608
+msgid "Roof bridge speed"
+msgstr ""
+
+#: src/libslic3r/PrintConfig.cpp:3609
+msgid ""
+"Speed for printing the layer above the support material. If expressed as "
+"percentage, it is calculated over the bridge speed. Set to zero to use the "
+"bridge speed."
+msgstr ""
+
+#: src/libslic3r/PrintConfig.cpp:3615
+msgid "Roof bridge flow ratio"
+msgstr ""
+
+#: src/libslic3r/PrintConfig.cpp:3616
+msgid ""
+"Extrusion flow multiplier for the layer above the support material. A value "
+"above 1 extrudes more material, which helps the bridge over the support to "
+"close and to be removed from the support."
+msgstr ""
+
 #: src/libslic3r/PrintConfig.cpp:3577
 msgid "Maximum Branch Angle"
 msgstr ""

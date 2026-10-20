@@ -40,6 +40,8 @@ struct ObjectLayerToPrint
     ObjectLayerToPrint() : object_layer(nullptr), support_layer(nullptr) {}
     const Layer *object_layer;
     const SupportLayer *support_layer;
+    // Is this object layer printed directly on top of support material?
+    bool over_support{false};
     const Layer *layer() const { return (object_layer != nullptr) ? object_layer : support_layer; }
     const PrintObject *object() const {
         return (this->layer() != nullptr) ? this->layer()->object() : nullptr;

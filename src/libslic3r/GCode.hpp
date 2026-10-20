@@ -434,6 +434,8 @@ private:
     const Layer*                        m_layer;
     // m_layer is an object layer and it is being printed over raft surface.
     bool                                m_object_layer_over_raft;
+    // m_layer is an object layer and it is being printed directly on top of support material.
+    bool                                m_object_layer_over_support;
     double                              m_volumetric_speed;
     // Support for the extrusion role markers. Which marker is active?
     GCodeExtrusionRole                  m_last_extrusion_role;
@@ -503,6 +505,8 @@ private:
     bool                                on_first_layer() const { return m_layer != nullptr && m_layer->id() == 0; }
     // To control print speed of 1st object layer over raft interface.
     bool                                object_layer_over_raft() const { return m_object_layer_over_raft; }
+    // To control print speed and flow of the object layer printed on top of support material.
+    bool                                object_layer_over_support() const { return m_object_layer_over_support; }
 
     // Fill in cache of smooth paths for perimeters, fills and supports of the given object layers.
     // Based on params, the paths are either decimated to sparser polylines, or interpolated with circular arches.

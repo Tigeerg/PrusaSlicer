@@ -871,6 +871,11 @@ bool PrintObject::invalidate_state_by_config_options(
                 steps.emplace_back(posPrepareInfill);
             }
             invalidated |= m_print->invalidate_step(psGCodeExport);
+        } else if (opt_key == "support_material_roof_bridge"
+                || opt_key == "support_material_roof_bridge_speed"
+                || opt_key == "support_material_roof_bridge_flow_ratio") {
+            // These options only affect the G-code export (speed and flow of the layer printed above support).
+            invalidated |= m_print->invalidate_step(psGCodeExport);
         } else if (opt_key == "fill_density") {
             // One likely wants to reslice only when switching between zero infill to simulate boolean difference (subtracting volumes),
             // normal infill and 100% (solid) infill.

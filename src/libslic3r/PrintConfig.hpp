@@ -713,6 +713,9 @@ PRINT_CONFIG_CLASS_DEFINE(
     // Overhang angle threshold.
     ((ConfigOptionInt,                 support_material_threshold))
     ((ConfigOptionBool,                support_material_with_sheath))
+    ((ConfigOptionBool,                support_material_roof_bridge))
+    ((ConfigOptionFloatOrPercent,      support_material_roof_bridge_speed))
+    ((ConfigOptionFloat,               support_material_roof_bridge_flow_ratio))
     ((ConfigOptionFloatOrPercent,      support_material_xy_spacing))
     // Tree supports
     ((ConfigOptionFloat,               support_tree_angle))

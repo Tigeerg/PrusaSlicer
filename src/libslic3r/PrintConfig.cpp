@@ -3602,6 +3602,39 @@ void PrintConfigDef::init_fff_params()
     def->mode = comExpert;
     def->set_default_value(new ConfigOptionFloat(0.));
 
+    def = this->add("support_material_roof_bridge", coBool);
+    def->label = L("Roof bridge (layer above support)");
+    def->category = L("Support material");
+    // TRN PrintSettings : "Roof bridge (layer above support)"
+    def->tooltip = L("Print the bottom of the object layer resting on the support material as a bridge: "
+                   "slower and with a higher extrusion flow. This improves the surface quality above the "
+                   "support and makes the support easier to remove.");
+    def->mode = comExpert;
+    def->set_default_value(new ConfigOptionBool(false));
+
+    def = this->add("support_material_roof_bridge_speed", coFloatOrPercent);
+    def->label = L("Roof bridge speed");
+    def->category = L("Support material");
+    // TRN PrintSettings : "Roof bridge speed"
+    def->tooltip = L("Speed for printing the layer above the support material. If expressed as percentage, "
+                   "it is calculated over the bridge speed. Set to zero to use the bridge speed.");
+    def->sidetext = L("mm/s or %");
+    def->min = 0;
+    def->mode = comExpert;
+    def->set_default_value(new ConfigOptionFloatOrPercent(0, false));
+
+    def = this->add("support_material_roof_bridge_flow_ratio", coFloat);
+    def->label = L("Roof bridge flow ratio");
+    def->category = L("Support material");
+    // TRN PrintSettings : "Roof bridge flow ratio"
+    def->tooltip = L("Extrusion flow multiplier for the layer above the support material. A value above 1 "
+                   "extrudes more material, which helps the bridge over the support to close and to be "
+                   "removed from the support.");
+    def->min = 0.5;
+    def->max = 2.;
+    def->mode = comExpert;
+    def->set_default_value(new ConfigOptionFloat(1.));
+
     def = this->add("support_tree_angle", coFloat);
     def->label = L("Maximum Branch Angle");
     def->category = L("Support material");

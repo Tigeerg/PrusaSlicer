@@ -1569,6 +1569,9 @@ void TabPrint::build()
         optgroup->append_single_option_line("support_material_bottom_contact_distance", category_path + "contact-z-distance");
         optgroup->append_single_option_line("support_material_pattern", category_path + "pattern");
         optgroup->append_single_option_line("support_material_with_sheath", category_path + "with-sheath-around-the-support");
+        optgroup->append_single_option_line("support_material_roof_bridge", category_path + "with-sheath-around-the-support");
+        optgroup->append_single_option_line("support_material_roof_bridge_speed", category_path + "with-sheath-around-the-support");
+        optgroup->append_single_option_line("support_material_roof_bridge_flow_ratio", category_path + "with-sheath-around-the-support");
         optgroup->append_single_option_line("support_material_spacing", category_path + "pattern-spacing-0-inf");
         optgroup->append_single_option_line("support_material_angle", category_path + "pattern-angle");
         optgroup->append_single_option_line("support_material_closing_radius", category_path + "pattern-angle");

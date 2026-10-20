@@ -398,6 +398,30 @@ GCodeGenerator::ObjectsLayerToPrint GCodeGenerator::collect_layers_to_print(cons
             PrintStateBase::WarningLevel::CRITICAL, warning);
     }
 
+    // Mark the object layers, which are printed directly on top of the support material.
+    // Such layers are printed with a slower speed and a higher extrusion flow (roof bridge),
+    // see the "support_material_roof_bridge*" options.
+    if (! object.support_layers().empty()) {
+        size_t idx_support_layer = 0;
+        for (ObjectLayerToPrint &layer_to_print : layers_to_print) {
+            if (layer_to_print.object_layer == nullptr)
+                continue;
+            const Layer &object_layer = *layer_to_print.object_layer;
+            const double bottom_z = object_layer.print_z - object_layer.height;
+            // Advance to the last support layer, whose top is not above the bottom of this object layer.
+            while (idx_support_layer + 1 < object.support_layers().size() &&
+                   object.support_layers()[idx_support_layer + 1]->print_z <= bottom_z + EPSILON)
+                ++idx_support_layer;
+            if (idx_support_layer < object.support_layers().size()) {
+                const SupportLayer &support_layer = *object.support_layers()[idx_support_layer];
+                if (support_layer.print_z <= bottom_z + EPSILON &&
+                    support_layer.print_z >= bottom_z - object_layer.height - EPSILON &&
+                    support_layer.has_extrusions())
+                    layer_to_print.over_support = true;
+            }
+        }
+    }
+
     return layers_to_print;
 }
 
@@ -596,6 +620,7 @@ GCodeGenerator::GCodeGenerator(const Print* print) :
     m_layer_index(-1), 
     m_layer(nullptr),
     m_object_layer_over_raft(false),
+    m_object_layer_over_support(false),
     m_volumetric_speed(0),
     m_last_extrusion_role(GCodeExtrusionRole::None),
     m_last_width(0.0f),
@@ -2689,6 +2714,7 @@ LayerResult GCodeGenerator::process_layer(
         m_travel_obstacle_tracker.init_layer(layer, layers);
 
     m_object_layer_over_raft = false;
+    m_object_layer_over_support = false;
     if (!first_layer && ! print.config().layer_gcode.value.empty()) {
         DynamicConfig config;
         config.set_key_value("layer_num", new ConfigOptionInt(m_layer_index));
@@ -2875,6 +2901,7 @@ LayerResult GCodeGenerator::process_layer(
             if (!support_extrusions.empty()) {
                 m_layer = layer_to_print.support_layer;
                 m_object_layer_over_raft = false;
+                m_object_layer_over_support = false;
                 gcode += this->extrude_support(support_extrusions);
             }
 
@@ -2935,6 +2962,8 @@ std::string GCodeGenerator::extrude_slices(
     // To control print speed of the 1st object layer printed over raft interface.
     m_object_layer_over_raft = layer_to_print.object_layer && layer_to_print.object_layer->id() > 0 &&
         print_object.slicing_parameters().raft_layers() == layer_to_print.object_layer->id();
+    // To control print speed and flow of the object layer printed on top of support material.
+    m_object_layer_over_support = layer_to_print.over_support;
 
     std::string gcode;
     for (const SliceExtrusions &slice_extrusions : slices_extrusions) {
@@ -3454,6 +3483,14 @@ std::string GCodeGenerator::_extrude(
         // gcfNoExtrusion
         e_per_mm = 0;
 
+    // "Roof bridge": the bottom of the object layer printed directly on top of the support material.
+    const bool roof_bridge = this->object_layer_over_support() && m_config.support_material_roof_bridge.value &&
+        (path_attr.role == ExtrusionRole::SolidInfill || path_attr.role == ExtrusionRole::BridgeInfill ||
+         path_attr.role == ExtrusionRole::InfillOverBridge);
+    if (roof_bridge)
+        // Extrude more material to close the bridge over the support and make it easier to remove.
+        e_per_mm *= m_config.support_material_roof_bridge_flow_ratio.value;
+
     // set speed
     if (speed == -1) {
         if (path_attr.role == ExtrusionRole::Perimeter) {
@@ -3513,6 +3550,16 @@ std::string GCodeGenerator::_extrude(
 
     if (dynamic_print_and_fan_speeds.print_speed > -1) {
         speed = dynamic_print_and_fan_speeds.print_speed;
+    }
+
+    // Slow down the bottom of the object layer printed on top of the support material (roof bridge).
+    if (roof_bridge) {
+        const double bridge_speed = m_config.get_abs_value("bridge_speed");
+        double roof_bridge_speed  = m_config.get_abs_value("support_material_roof_bridge_speed", bridge_speed);
+        if (roof_bridge_speed <= 0.)
+            roof_bridge_speed = bridge_speed;
+        if (roof_bridge_speed > 0.)
+            speed = roof_bridge_speed;
     }
 
     // cap speed with max_volumetric_speed anyway (even if user is not using autospeed)
