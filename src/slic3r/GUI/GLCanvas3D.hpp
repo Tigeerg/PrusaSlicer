@@ -1002,6 +1002,9 @@ private:
     void _picking_pass();
     void _rectangular_selection_picking_pass();
     void _render_background();
+    // Draws the background gradient with explicitly given colors (used by the thumbnails, which
+    // get a light "studio" background instead of the scene background colors).
+    void _render_background_gradient(const ColorRGBA& top_color, const ColorRGBA& bottom_color);
     void _render_bed(const Transform3d& view_matrix, const Transform3d& projection_matrix, bool bottom);
     void _render_bed_axes();
     void _render_bed_for_picking(const Transform3d& view_matrix, const Transform3d& projection_matrix, bool bottom);

@@ -4966,6 +4966,14 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
         glsafe(::glClearColor(0.85f, 0.85f, 0.85f, 1.0f));
 
     glsafe(::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+
+    // Studio background: a light vertical gradient instead of the scene background colors.
+    // The alpha of the request is kept, so thumbnails that are meant to stay transparent do
+    // stay transparent, while formats without an alpha channel get the light gradient.
+    const float background_alpha = thumbnail_params.transparent_background ? 0.0f : 1.0f;
+    _render_background_gradient(ColorRGBA(0.97f, 0.97f, 0.97f, background_alpha),
+                                ColorRGBA(0.79f, 0.79f, 0.79f, background_alpha));
+
     glsafe(::glEnable(GL_DEPTH_TEST));
     glsafe(::glCullFace(GL_BACK));
 
@@ -4996,10 +5004,12 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
             shader->set_uniform("z_range", z_range);
         }
         else {
-            // Studio look for the generated thumbnail: in addition to the single directional
-            // light, add a flat fill light, so the model is evenly lit (the editor keeps the
-            // stock lighting, this uniform is set by the thumbnail render path only).
-            shader->set_uniform("emission_factor", 0.30f);
+            // Studio light for the generated thumbnail: the fill is part of the studio lighting
+            // branch of the shader, here only the emissive term of the material is dropped.
+            shader->set_uniform("emission_factor", 0.0f);
+            // Use the thumbnail-only studio lighting of the gouraud_light shader (a key light
+            // from the upper left plus a soft frontal fill). Reset after the loop.
+            shader->set_uniform("studio_light", true);
             vol->model.set_color((vol->printable && !vol->is_outside) ? studio_thumbnail_color : ColorRGBA::GRAY());
 #if ENABLE_ENVIRONMENT_MAP
             // Use the environment map to give the generated thumbnail a "studio" look.
@@ -5058,6 +5068,14 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
     // ... and unbind the environment texture, otherwise it stays bound on the active texture unit.
     glsafe(::glBindTexture(GL_TEXTURE_2D, 0));
 #endif // ENABLE_ENVIRONMENT_MAP
+
+    // Do not leak the thumbnail-only studio lighting into the other users of the "gouraud_light"
+    // shader (the shader objects are shared with the editor).
+    if (GLShaderProgram* shader = wxGetApp().get_shader("gouraud_light")) {
+        shader->start_using();
+        shader->set_uniform("studio_light", false);
+        shader->stop_using();
+    }
 
     glsafe(::glDisable(GL_DEPTH_TEST));
 
@@ -6115,10 +6133,12 @@ void GLCanvas3D::_render_background()
     }
 
     // Draws a bottom to top gradient over the complete screen.
-    glsafe(::glDisable(GL_DEPTH_TEST));
+    _render_background_gradient(top_color, bottom_color);
+}
 
-    const ColorRGBA top_color = use_error_color ? ERROR_BG_LIGHT_COLOR : DEFAULT_BG_LIGHT_COLOR;
-    const ColorRGBA bottom_color = use_error_color ? ERROR_BG_DARK_COLOR : DEFAULT_BG_DARK_COLOR;
+void GLCanvas3D::_render_background_gradient(const ColorRGBA& top_color, const ColorRGBA& bottom_color)
+{
+    glsafe(::glDisable(GL_DEPTH_TEST));
 
     if (!m_background.is_initialized()) {
         m_background.reset();
