@@ -7337,7 +7337,9 @@ void GLCanvas3D::_load_sla_shells()
         m_volumes.volumes.emplace_back(new GLVolume(color));
         GLVolume& v = *m_volumes.volumes.back();
 #if ENABLE_SMOOTH_NORMALS
-        v.model.init_from(mesh, true);
+        // The smooth-normal variant of init_from() takes a TriangleMesh, while this lambda
+        // receives a bare indexed_triangle_set, so wrap it (the conversion is explicit).
+        v.model.init_from(TriangleMesh{mesh}, true);
 #else
         v.model.init_from(mesh);
 #endif // ENABLE_SMOOTH_NORMALS
