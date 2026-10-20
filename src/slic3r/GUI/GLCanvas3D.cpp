@@ -4957,11 +4957,12 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
     std::vector<ColorRGBA> extruders_colors             = GUI::wxGetApp().plater()->get_extruder_colors_from_plater_config();
     const bool             is_enabled_painted_thumbnail = !model_objects.empty() && !extruders_colors.empty();
 
+    // Neutral "studio" background for the generated thumbnails. The RGB is the same in both
+    // cases: thumbnails stored without an alpha channel (e.g. the JPG embedded for the printer
+    // screen) keep this light grey, while PNG thumbnails stay transparent.
     if (thumbnail_params.transparent_background)
-//        glsafe(::glClearColor(0.0f, 0.0f, 0.0f, 0.0f));
-        glsafe(::glClearColor(0.4f, 0.4f, 0.4f, 0.0f));
+        glsafe(::glClearColor(0.85f, 0.85f, 0.85f, 0.0f));
     else
-        // Neutral "studio" background for a cleaner look of the generated thumbnail image.
         glsafe(::glClearColor(0.85f, 0.85f, 0.85f, 1.0f));
 
     glsafe(::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));

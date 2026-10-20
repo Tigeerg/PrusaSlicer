@@ -60,7 +60,9 @@ inline void export_thumbnails_to_file(ThumbnailsGeneratorCallback &thumbnail_cb,
     if (thumbnail_cb != nullptr) {
         for (const auto& [format, size] : thumbnails_list) {
             static constexpr const size_t max_row_length = 78;
-            ThumbnailsList thumbnails = thumbnail_cb(ThumbnailsParams{ {size}, true, true, true, true });
+            // show_bed = false: the generated thumbnail shows the model only, on a neutral
+            // "studio" background, instead of the printer bed with its grid.
+            ThumbnailsList thumbnails = thumbnail_cb(ThumbnailsParams{ {size}, true, true, false, true });
             for (const ThumbnailData& data : thumbnails)
                 if (data.is_valid()) {
                     auto compressed = compress_thumbnail(data, format);
@@ -97,7 +99,9 @@ inline void generate_binary_thumbnails(ThumbnailsGeneratorCallback& thumbnail_cb
     assert(thumbnail_cb != nullptr);
     if (thumbnail_cb != nullptr) {
         for (const auto& [format, size] : thumbnails_list) {
-            ThumbnailsList thumbnails = thumbnail_cb(ThumbnailsParams{ {size}, true, true, true, true });
+            // show_bed = false: the generated thumbnail shows the model only, on a neutral
+            // "studio" background, instead of the printer bed with its grid.
+            ThumbnailsList thumbnails = thumbnail_cb(ThumbnailsParams{ {size}, true, true, false, true });
             for (const ThumbnailData &data : thumbnails)
                 if (data.is_valid()) {
                     auto compressed = compress_thumbnail(data, format);
