@@ -4972,6 +4972,11 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
     const Transform3d& projection_matrix = camera.get_projection_matrix();
 
     const int extruders_count = wxGetApp().extruders_edited_cnt();
+
+    // Fixed "studio" color for the generated thumbnails: they are meant to look like a product
+    // render, not to repeat the filament color of the current profile (#FF8000, Prusa orange).
+    static const ColorRGBA studio_thumbnail_color(1.0f, 0.50f, 0.0f, 1.0f);
+
     for (GLVolume *vol : visible_volumes) {
         const int obj_idx = vol->object_idx();
         const int vol_idx = vol->volume_idx();
@@ -4995,7 +5000,7 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
             // light, add a flat fill light, so the model is evenly lit (the editor keeps the
             // stock lighting, this uniform is set by the thumbnail render path only).
             shader->set_uniform("emission_factor", 0.30f);
-            vol->model.set_color((vol->printable && !vol->is_outside) ? vol->color : ColorRGBA::GRAY());
+            vol->model.set_color((vol->printable && !vol->is_outside) ? studio_thumbnail_color : ColorRGBA::GRAY());
 #if ENABLE_ENVIRONMENT_MAP
             // Use the environment map to give the generated thumbnail a "studio" look.
             // Not applied to the multi-material painting shader, which has no environment map.
