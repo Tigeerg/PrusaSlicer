@@ -43,9 +43,11 @@
 
 
 // Enable rendering of objects using environment map.
-// Used by the generated model thumbnails to get a "studio" look; the editor keeps the
-// environment map off unless it is enabled explicitly in Preferences -> Render.
-#define ENABLE_ENVIRONMENT_MAP 1
+// Keep disabled: the feature does not work even when enabled - the environment texture is
+// never created (Plater::init_environment_texture() leaves get_environment_texture_id() == 0
+// and both the editor and the thumbnail renderers silently fall back to plain lighting).
+// The thumbnail "studio" look is done with a fill light in GLCanvas3D::_render_thumbnail_internal.
+#define ENABLE_ENVIRONMENT_MAP 0
 // Enable smoothing of objects normals.
 // Keep disabled: this one is applied to every model volume in the editor (3DScene.cpp),
 // not only to the thumbnails, and it visibly changes the shading/edges of the model.

@@ -4991,7 +4991,10 @@ void GLCanvas3D::_render_thumbnail_internal(ThumbnailData& thumbnail_data, const
             shader->set_uniform("z_range", z_range);
         }
         else {
-            shader->set_uniform("emission_factor", 0.0f);
+            // Studio look for the generated thumbnail: in addition to the single directional
+            // light, add a flat fill light, so the model is evenly lit (the editor keeps the
+            // stock lighting, this uniform is set by the thumbnail render path only).
+            shader->set_uniform("emission_factor", 0.30f);
             vol->model.set_color((vol->printable && !vol->is_outside) ? vol->color : ColorRGBA::GRAY());
 #if ENABLE_ENVIRONMENT_MAP
             // Use the environment map to give the generated thumbnail a "studio" look.
