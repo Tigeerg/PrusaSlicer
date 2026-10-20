@@ -6133,6 +6133,8 @@ void GLCanvas3D::_render_background()
     }
 
     // Draws a bottom to top gradient over the complete screen.
+    const ColorRGBA top_color    = use_error_color ? ERROR_BG_LIGHT_COLOR : DEFAULT_BG_LIGHT_COLOR;
+    const ColorRGBA bottom_color = use_error_color ? ERROR_BG_DARK_COLOR  : DEFAULT_BG_DARK_COLOR;
     _render_background_gradient(top_color, bottom_color);
 }
 
